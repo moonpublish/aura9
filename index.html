@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="th" class="overflow-x-hidden max-w-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aura Health - Sports & Health Hub</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            aura: {
+              lime: '#A3E635',
+              dark: '#0F172A',
+              cardDark: '#1E1B4B',
+              accent: '#38BDF8',
+              surface: '#13172E'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts: Prompt & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
+  <!-- React 18 & Babel Standalone -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+      font-family: 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* Soft Pastel Light Mode Background */
+    body.light-mode-theme {
+      background: linear-gradient(135deg, #EEF2FF 0%, #FDF2F8 50%, #F0FDFA 100%) !important;
+      background-attachment: fixed !important;
+      color: #0f172a !important;
+    }
+
+    /* Floating Translucent Header */
+    .floating-rounded-header {
+      background: rgba(19, 23, 46, 0.58);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 10px 32px -6px rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+    }
+    .floating-rounded-header-light {
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      box-shadow: 0 10px 30px -8px rgba(15, 23, 42, 0.08), inset 0 1px 0 0 rgba(255, 255, 255, 0.95);
+    }
+
+    /* Inner Glass Capsules */
+    .frozen-capsule-bg {
+      background: rgba(27, 33, 68, 0.55);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.18), 0 4px 12px -2px rgba(0, 0, 0, 0.3);
+    }
+    .frozen-capsule-bg-light {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(203, 213, 225, 0.85);
+      box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.06), inset 0 1px 0 0 rgba(255, 255, 255, 0.95);
+    }
+
+    /* Common Card Styling */
+    .glass-card-dark {
+      background: rgba(30, 27, 75, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .glass-card-light {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 12px 32px -10px rgba(99, 102, 241, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+    }
+
+    /* Raindrop Keyframe Animations for Cloudy/Rain Weather */
+    @keyframes rainfall {
+      0% {
+        transform: translateY(-40px) translateX(0);
+        opacity: 0;
+      }
+      20% {
+        opacity: 0.85;
+      }
+      80% {
+        opacity: 0.85;
+      }
+      100% {
+        transform: translateY(180px) translateX(15px);
+        opacity: 0;
+      }
+    }
+    .raindrop-streak {
+      position: absolute;
+      width: 2px;
+      height: 18px;
+      background: linear-gradient(to bottom, rgba(56, 189, 248, 0.05), rgba(56, 189, 248, 0.75));
+      border-radius: 9999px;
+      animation: rainfall linear infinite;
+      pointer-events: none;
+    }
+    .raindrop-streak-light {
+      background: linear-gradient(to bottom, rgba(37, 99, 235, 0.05), rgba(37, 99, 235, 0.65));
+    }
+
+    /* Fluffy Floating Cloud Animation */
+    @keyframes cloudFloat {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-4px) scale(1.02); }
+    }
+    .anim-cloud-float {
+      animation: cloudFloat 4.2s ease-in-out infinite;
+    }
+
+    /* Fade-in for modal overlays */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.22s ease-out forwards;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-[#1E1B4B] via-[#0F172A] to-[#1E1B4B] text-slate-100 antialiased selection:bg-lime-400 selection:text-slate-950 transition-colors duration-300 min-h-screen overflow-x-hidden max-w-full">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // --- REUSABLE INLINE SVG ICONS ---
+    const Icon = ({ name, className = "w-5 h-5", ...props }) => {
+      switch (name) {
+        case 'home':
+          return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>;
+        case 'users':
+          return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>;
+        case 'dumbbell':
+          return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 7h12M6 17h12M4 9v6M20 9v6M9 4v16M15 4v16"/></svg>;
+        case 'utensils':
+          return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>;
+        case 'pill':
+          return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>;
+        case 'video':
+          return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>;
+        case 'sun':
+          return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>;
+        case 'moon':
+          return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>;
+        case 'bell':
+          return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>;
+        case 'thermometer':
+          return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v6m-4-3a4 4 0 118 0 4 4 0 01-8 0zM12 3a2 2 0 00-2 2v9.172a4.001 4.001 0 104 0V5a2 2 0 00-2-2z"/></svg>;
+        case 'wind':
+          return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2"/></svg>;
+        case 'droplets':
+          return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>;
+        case 'chevronRight':
+          return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>;
+        case 'chevronLeft':
+          return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/></svg>;
+        case 'x':
+          return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>;
+        case 'check':
+          return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg>;
+        case 'plus':
+          return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"/></svg>;
+        case 'bolt':
+          return <svg className={className} fill="currentColor" viewBox="0 0 20 20" {...props}><path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.381z" clipRule="evenodd"/></svg>;
+        default:
+          return null;
+      }
+    };
+
+    // --- STATIC MOCK DATA ---
+    const STATIC_VENUES = [
+      { id: 1, sport: 'badminton', type: 'public', name: 'สวนลุมพินี (สนามกลางแจ้ง)', loc: 'ปทุมวัน, กทม.', open: '05:00 - 21:00 น.', baseCost: 0, image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=600&q=80' },
+      { id: 2, sport: 'badminton', type: 'private', name: 'คอร์ทแบดมินตัน วินเนอร์ อารีนา', loc: 'สุขุมวิท 71, กทม.', open: '10:00 - 24:00 น.', baseCost: 320, image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=600&q=80' },
+      { id: 3, sport: 'running', type: 'public', name: 'สวนเบญจกิติ (เลนวิ่งลอยฟ้า)', loc: 'คลองเตย, กทม.', open: '05:00 - 21:00 น.', baseCost: 0, image: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=600&q=80' }
+    ];
+
+    const STATIC_TRAINERS = [
+      { id: 1, name: 'โค้ชก้องเกียรติ', exp: 'อดีตนักกีฬาทีมชาติ 12 ปี', rate: 700, img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80' },
+      { id: 2, name: 'โค้ชพิมพ์ชนก', exp: 'Certified BWF Level 2', rate: 650, img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80' },
+      { id: 3, name: 'โค้ชธนดล', exp: 'เวชศาสตร์การกีฬาจุฬาฯ', rate: 750, img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80' }
+    ];
+
+    const STATIC_COURSES = [
+      { id: 1, title: 'Cardio Boost HIIT Mastery', instructor: 'โค้ชพลอย (ACE Certified)', duration: '4 สัปดาห์ (16 คลาส)', price: 1290, image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=600&q=80' },
+      { id: 2, title: 'Postural Spine Rehabilitation', instructor: 'นพ. วิศรุต (เวชศาสตร์ฟื้นฟู)', duration: '6 สัปดาห์ (18 คลาส)', price: 1890, image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=600&q=80' }
+    ];
+
+    const STATIC_FOODS = [
+      { id: 1, name: 'อกไก่ต้มน้ำปลา + ควินัวผักรวม', category: 'อาหารคลีน', calories: 380, protein: 42, carbs: 32, fat: 6, glycemicIndex: 'ต่ำ (Low GI)', alignment: 'เหมาะสำหรับมื้อหลังออกกำลังกาย เสริมสร้างกล้ามเนื้อและควบคุมน้ำตาล', image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80' },
+      { id: 2, name: 'สลัดแซลมอนย่างอะโวคาโด', category: 'คีโต/ไขมันดี', calories: 460, protein: 34, carbs: 12, fat: 28, glycemicIndex: 'ต่ำมาก (Very Low)', alignment: 'อุดมด้วยโอเมก้า 3 บำรุงหลอดเลือดและหัวใจ', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80' }
+    ];
+
+    // --- MAIN APP COMPONENT ---
+    function App() {
+      const [activeTab, setActiveTab] = useState('dashboard');
+      const [theme, setTheme] = useState('dark');
+      const [selectedRegion, setSelectedRegion] = useState('กทม.');
+
+      // Live 1-second clock
+      const [currentTime, setCurrentTime] = useState(new Date());
+      useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => clearInterval(timer);
+      }, []);
+
+      // Theme synchronization
+      useEffect(() => {
+        const root = document.documentElement;
+        if (theme === 'dark') {
+          root.classList.add('dark');
+          document.body.className = "bg-gradient-to-br from-[#1E1B4B] via-[#0F172A] to-[#1E1B4B] text-slate-100 antialiased selection:bg-lime-400 selection:text-slate-950 transition-colors duration-300 min-h-screen overflow-x-hidden max-w-full";
+        } else {
+          root.classList.remove('dark');
+          document.body.className = "light-mode-theme antialiased selection:bg-indigo-900 selection:text-white transition-colors duration-300 min-h-screen overflow-x-hidden max-w-full";
+        }
+      }, [theme]);
+
+      // Dynamic Greeting based on current hour
+      const getGreeting = () => {
+        const hr = currentTime.getHours();
+        if (hr >= 5 && hr < 12) return 'สวัสดีตอนเช้า';
+        if (hr >= 12 && hr < 17) return 'สวัสดีตอนบ่าย';
+        if (hr >= 17 && hr < 21) return 'สวัสดีตอนเย็น';
+        return 'สวัสดีตอนค่ำ';
+      };
+
+      // Formatted Thai Date & Clock
+      const thaiDays = ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'];
+      const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+      const dateString = `${thaiDays[currentTime.getDay()]}, ${currentTime.getDate()} ${thaiMonths[currentTime.getMonth()]} ${currentTime.getFullYear() + 543}`;
+      const timeString = currentTime.toTimeString().split(' ')[0];
+
+      // User Health Metrics State
+      const [userStats, setUserStats] = useState({
+        steps: 8420,
+        stepsGoal: 10000,
+        water: 1850,
+        waterGoal: 2500,
+        counseling: '1:45 ชม.',
+        labStatus: '14/25'
+      });
+
+      const remainingSteps = Math.max(0, userStats.stepsGoal - userStats.steps);
+      const remainingWater = Math.max(0, userStats.waterGoal - userStats.water);
+
+      const addWater = (amt = 250) => {
+        setUserStats(prev => ({
+          ...prev,
+          water: Math.min(prev.waterGoal + 1000, prev.water + amt)
+        }));
+      };
+
+      const isDark = theme === 'dark';
+
+      return (
+        <div className="relative min-h-screen flex flex-col justify-between w-full overflow-x-hidden">
+          
+          {/* ======================================================== */}
+          {/* GLOBAL FROZEN FLOATING ROUNDED HEADER (ALL PAGES)         */}
+          {/* STRICT 2-COLUMN SINGLE ROW - NEVER WRAPS DOWN            */}
+          {/* ======================================================== */}
+          <header className="fixed top-2.5 sm:top-3 left-0 right-0 z-40 px-2 sm:px-6 md:px-8 max-w-7xl mx-auto w-full pointer-events-none">
+            <div className={`pointer-events-auto rounded-3xl px-3 sm:px-5 py-2 sm:py-2.5 flex flex-row flex-nowrap items-center justify-between gap-2 sm:gap-4 shadow-xl transition-all duration-300 overflow-x-auto no-scrollbar ${
+              isDark ? 'floating-rounded-header text-white' : 'floating-rounded-header-light text-slate-900'
+            }`}>
+              
+              {/* Left Column (Strictly Unwrapped): Date + Glowing Clock + Region Pill */}
+              <div className="flex flex-col items-start gap-0.5 flex-shrink-0 min-w-max">
+                <span className={`text-[10px] sm:text-xs font-semibold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                  {dateString}
+                </span>
+
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-lime-400 shadow-[0_0_8px_#a3e635] animate-pulse flex-shrink-0"></span>
+                  <span className={`font-mono text-sm sm:text-lg font-black tracking-tight ${isDark ? 'text-lime-400' : 'text-slate-900'}`}>
+                    {timeString}
+                  </span>
+                </div>
+
+                {/* Compact Region Dropdown Pill */}
+                <div className={`mt-0.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold border transition-colors ${
+                  isDark ? 'bg-slate-800/80 border-slate-700 text-slate-200' : 'bg-white/90 border-slate-300 text-slate-800'
+                }`}>
+                  <span className="text-rose-500 text-xs">📍</span>
+                  <select
+                    value={selectedRegion}
+                    onChange={(e) => setSelectedRegion(e.target.value)}
+                    className="bg-transparent font-black outline-none cursor-pointer pr-1"
+                  >
+                    <option value="กทม." className="bg-slate-900 text-white">กทม.</option>
+                    <option value="เชียงใหม่" className="bg-slate-900 text-white">เชียงใหม่</option>
+                    <option value="ภูเก็ต" className="bg-slate-900 text-white">ภูเก็ต</option>
+                    <option value="ขอนแก่น" className="bg-slate-900 text-white">ขอนแก่น</option>
+                  </select>
+                  <span className="text-[10px] opacity-70">⌵</span>
+                </div>
+              </div>
+
+              {/* Right Column (Single Capsule - NEVER WRAPS DOWN): Avatar + Greeting + 2 Stacked Badges + Theme/Bell */}
+              <div className={`flex flex-row flex-nowrap items-center gap-2 sm:gap-3.5 px-2.5 sm:px-4 py-1.5 rounded-2xl border transition-all flex-shrink-0 min-w-max ${
+                isDark ? 'frozen-capsule-bg' : 'frozen-capsule-bg-light'
+              }`}>
+                {/* User Avatar with Lime Status Dot */}
+                <div className="relative flex-shrink-0">
+                  <img
+                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
+                    alt="John"
+                    className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover ring-2 ring-lime-400 shadow-md"
+                  />
+                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-lime-400 border-2 border-slate-950 rounded-full"></span>
+                </div>
+
+                {/* Greeting & Two Stacked Badges */}
+                <div className="flex flex-col min-w-max">
+                  <div className={`text-xs sm:text-sm font-black flex items-center gap-1 ${isDark ? 'text-white' : 'text-slate-950'}`}>
+                    <span>{getGreeting()}, คุณ John</span>
+                    <span className="inline-block animate-bounce text-xs sm:text-sm">👋</span>
+                  </div>
+
+                  {/* 2 Stacked Badges: Walk on top, Water below */}
+                  <div className="flex flex-col gap-1 mt-1">
+                    {/* Walk Badge */}
+                    <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] sm:text-[11px] font-bold border transition-colors ${
+                      isDark ? 'bg-amber-500/15 border-amber-500/30 text-amber-300' : 'bg-amber-100 border-amber-300 text-amber-900'
+                    }`}>
+                      <span>🏃</span>
+                      <span>เดินอีก {remainingSteps.toLocaleString()} ก้าว</span>
+                    </div>
+
+                    {/* Water Badge */}
+                    <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] sm:text-[11px] font-bold border transition-colors ${
+                      isDark ? 'bg-cyan-500/15 border-cyan-500/30 text-cyan-300' : 'bg-sky-100 border-sky-300 text-sky-900'
+                    }`}>
+                      <span>💧</span>
+                      <span>จิบน้ำอีก {remainingWater.toLocaleString()} มล.</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Subtle Divider & Circular Action Buttons */}
+                <div className="flex items-center gap-1.5 pl-1.5 sm:pl-2.5 border-l border-white/15 dark:border-white/15 flex-shrink-0">
+                  <button
+                    onClick={() => setTheme(isDark ? 'light' : 'dark')}
+                    className={`p-1.5 sm:p-2 rounded-xl transition-all shadow-sm ${
+                      isDark ? 'bg-slate-800/80 hover:bg-slate-700 text-yellow-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                    }`}
+                    title="สลับโหมดสี"
+                  >
+                    <Icon name={isDark ? 'sun' : 'moon'} className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      alert('การแจ้งเตือน: นัดหมายหมอพบผ่าน Telemedicine ในอีก 2 ชั่วโมง');
+                    }}
+                    className={`relative p-1.5 sm:p-2 rounded-xl transition-all shadow-sm ${
+                      isDark ? 'bg-slate-800/80 hover:bg-slate-700 text-slate-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                    }`}
+                    title="การแจ้งเตือน"
+                  >
+                    <Icon name="bell" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-lime-400"></span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </header>
+
+          {/* ======================================================== */}
+          {/* MAIN PAGE ROUTER WITH CLEAR GAP BENEATH FROZEN HEADER     */}
+          {/* ======================================================== */}
+          <main className="w-full max-w-7xl mx-auto px-3 sm:px-6 md:px-8 pt-36 sm:pt-40 md:pt-36 pb-28 flex-1">
+            {activeTab === 'dashboard' && <DashboardModule userStats={userStats} addWater={addWater} isDark={isDark} />}
+            {activeTab === 'community' && <CommunityModule isDark={isDark} />}
+            {activeTab === 'fitness' && <FitnessModule isDark={isDark} />}
+            {activeTab === 'nutrition' && <NutritionModule isDark={isDark} />}
+            {activeTab === 'meds' && <MedicationModule isDark={isDark} />}
+            {activeTab === 'telemed' && <TelemedModule isDark={isDark} />}
+          </main>
+
+          {/* ======================================================== */}
+          {/* GLOBAL BOTTOM NAVIGATION BAR                              */}
+          {/* ======================================================== */}
+          <nav className="fixed bottom-3 left-0 right-0 z-40 px-3 sm:px-6 md:px-8 max-w-xl mx-auto w-full pointer-events-none">
+            <div className={`pointer-events-auto rounded-3xl px-3 py-2 flex items-center justify-around shadow-2xl border backdrop-blur-2xl transition-all ${
+              isDark ? 'bg-slate-950/80 border-white/10 text-slate-400' : 'bg-white/85 border-slate-300 text-slate-600'
+            }`}>
+              {[
+                { id: 'dashboard', label: 'หน้าหลัก', icon: 'home' },
+                { id: 'community', label: 'คลับกีฬา', icon: 'users' },
+                { id: 'fitness', label: 'ออกกำลังกาย', icon: 'dumbbell' },
+                { id: 'nutrition', label: 'โภชนาการ', icon: 'utensils' },
+                { id: 'meds', label: 'เตือนยา', icon: 'pill' },
+                { id: 'telemed', label: 'พบแพทย์', icon: 'video' },
+              ].map(tab => {
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className={`flex flex-col items-center gap-1 px-2.5 py-1.5 rounded-2xl transition-all ${
+                      isActive 
+                        ? (isDark ? 'text-lime-400 bg-lime-400/10 font-bold' : 'text-indigo-600 bg-indigo-50 font-bold') 
+                        : 'hover:text-slate-200'
+                    }`}
+                  >
+                    <Icon name={tab.icon} className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
+                    <span className="text-[10px] font-medium tracking-tight">{tab.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </nav>
+
+        </div>
+      );
+    }
+
+    // ==============================================================
+    // 1. DASHBOARD MODULE (Energy Bar, Weather Rain Card, 2x2 Grid)
+    // ==============================================================
+    function DashboardModule({ userStats, addWater, isDark }) {
+      // Dynamic Schedule Items Grouped by Date (Today, Tomorrow, Day After)
+      const [selectedDateKey, setSelectedDateKey] = useState('2026-11-07');
+      const [scheduleItems, setScheduleItems] = useState([
+        // TODAY: 7 พ.ย. 2569
+        { id: 't1', dateKey: '2026-11-07', type: 'food', time: '07:30 น.', title: 'อาหารเช้า: ข้าวโอ๊ตผสมเวย์โปรตีน + กล้วยหอม', cal: 420, done: true, tag: 'มื้อเช้า' },
+        { id: 't2', dateKey: '2026-11-07', type: 'med', time: '08:15 น.', title: 'Vitamin C 1,000mg + Zinc 15mg', cal: 0, done: true, tag: 'วิตามินเช้า' },
+        { id: 't3', dateKey: '2026-11-07', type: 'food', time: '12:30 น.', title: 'อาหารเที่ยง: อกไก่ย่างสมุนไพร + ข้าวไรซ์เบอร์รี่ + ผักนึ่ง', cal: 540, done: true, tag: 'มื้อเที่ยง' },
+        { id: 't4', dateKey: '2026-11-07', type: 'med', time: '13:00 น.', title: 'Omega-3 Fish Oil 1,000mg (EPA/DHA)', cal: 10, done: true, tag: 'หลังอาหารเที่ยง' },
+        { id: 't5', dateKey: '2026-11-07', type: 'food', time: '15:30 น.', title: 'ของว่าง: อัลมอนด์อบ 25g + ชาเขียวมัทฉะอุ่น', cal: 160, done: false, tag: 'ของว่าง' },
+        { id: 't6', dateKey: '2026-11-07', type: 'sport', time: '17:30 - 18:30 น.', title: 'คลาส Cardio Boost HIIT Mastery', calBurn: 480, done: false, tag: 'สตูดิโอ A' },
+        { id: 't7', dateKey: '2026-11-07', type: 'sport', time: '19:00 - 20:30 น.', title: 'ก๊วนแบดมินตัน วินเนอร์ อารีนา คอร์ท B3', calBurn: 550, done: false, tag: 'คอมมูนิตี้' },
+        { id: 't8', dateKey: '2026-11-07', type: 'food', time: '20:45 น.', title: 'อาหารเย็น: ปลากะพงลวกจิ้ม + ไข่ต้ม 1 ฟอง + ซุปฟักทอง', cal: 380, done: false, tag: 'มื้อเย็น' },
+        { id: 't9', dateKey: '2026-11-07', type: 'med', time: '22:00 น.', title: 'Magnesium Glycinate 200mg (ช่วยการนอนหลับลึก)', cal: 0, done: false, tag: 'ก่อนนอน' },
+
+        // TOMORROW: 8 พ.ย. 2569
+        { id: 'm1', dateKey: '2026-11-08', type: 'sport', time: '06:30 - 07:30 น.', title: 'Morning Easy Run สวนเบญจกิติ (5.5 km)', calBurn: 360, done: false, tag: 'วิ่งสวน' },
+        { id: 'm2', dateKey: '2026-11-08', type: 'food', time: '08:00 น.', title: 'อาหารเช้า: ไข่กวน 3 ฟอง + อะโวคาโดโทสต์', cal: 490, done: false, tag: 'มื้อเช้า' },
+        { id: 'm3', dateKey: '2026-11-08', type: 'med', time: '08:30 น.', title: 'Vitamin D3 2,000 IU + K2', cal: 0, done: false, tag: 'วิตามินเช้า' },
+        { id: 'm4', dateKey: '2026-11-08', type: 'food', time: '12:30 น.', title: 'อาหารเที่ยง: สลัดแซลมอนย่างงาญี่ปุ่น', cal: 520, done: false, tag: 'มื้อเที่ยง' },
+        { id: 'm5', dateKey: '2026-11-08', type: 'sport', time: '18:00 - 19:15 น.', title: 'Postural Spine Rehab & Core Pilates', calBurn: 280, done: false, tag: 'ฟื้นฟูกล้ามเนื้อ' },
+        { id: 'm6', dateKey: '2026-11-08', type: 'food', time: '19:45 น.', title: 'อาหารเย็น: เต้าหู้ขาวผัดผักรวม + เห็ดหอม', cal: 320, done: false, tag: 'มื้อเย็น' },
+
+        // DAY AFTER: 9 พ.ย. 2569
+        { id: 'd1', dateKey: '2026-11-09', type: 'food', time: '08:00 น.', title: 'อาหารเช้า: โยเกิร์ตกรีกโบวล์ + กราโนล่าและผลไม้รวม', cal: 390, done: false, tag: 'มื้อเช้า' },
+        { id: 'd2', dateKey: '2026-11-09', type: 'med', time: '08:30 น.', title: 'Vitamin C 1,000mg + B-Complex', cal: 0, done: false, tag: 'วิตามินเช้า' },
+        { id: 'd3', dateKey: '2026-11-09', type: 'sport', time: '17:30 - 18:45 น.', title: 'Strength & Conditioning: Lower Body', calBurn: 440, done: false, tag: 'เวทเทรนนิ่ง' },
+        { id: 'd4', dateKey: '2026-11-09', type: 'food', time: '19:30 น.', title: 'อาหารเย็น: สเต็กปลาแซลมอน + ควินัวต้ม', cal: 560, done: false, tag: 'มื้อเย็น' }
+      ]);
+
+      const [scheduleFilter, setScheduleFilter] = useState('all'); // 'all', 'sport', 'med', 'food'
+
+      // Toggle To-Do Completion
+      const toggleSchedule = (id) => {
+        setScheduleItems(prev => prev.map(item => item.id === id ? { ...item, done: !item.done } : item));
+      };
+
+      // Available date groups
+      const dateTabs = [
+        { key: '2026-11-07', label: 'วันนี้ (เสาร์ 7 พ.ย.)', short: 'วันนี้' },
+        { key: '2026-11-08', label: 'พรุ่งนี้ (อาทิตย์ 8 พ.ย.)', short: 'พรุ่งนี้' },
+        { key: '2026-11-09', label: 'จันทร์ 9 พ.ย. 2569', short: '9 พ.ย.' }
+      ];
+
+      // Daily Calorie Budget constants
+      const dailyCalorieBudget = 2200; // TDEE baseline maintenance/deficit goal
+
+      // Items for the selected date
+      const activeDateItems = scheduleItems.filter(item => item.dateKey === selectedDateKey);
+
+      // Calculations for the selected date
+      const caloriesConsumed = activeDateItems
+        .filter(item => item.type === 'food' && item.done)
+        .reduce((sum, item) => sum + item.cal, 0);
+
+      const totalPlannedFoodCalories = activeDateItems
+        .filter(item => item.type === 'food')
+        .reduce((sum, item) => sum + item.cal, 0);
+
+      const workoutBurnCompleted = activeDateItems
+        .filter(item => item.type === 'sport' && item.done)
+        .reduce((sum, item) => sum + (item.calBurn || 0), 0);
+
+      // Total active burned: base daily metabolic & step burn + completed exercise
+      const baseBurn = selectedDateKey === '2026-11-07' ? 1420 : 1200;
+      const totalActiveBurned = baseBurn + workoutBurnCompleted;
+      const netCalorieBalance = caloriesConsumed - totalActiveBurned; // Net: Eaten - Burned
+      const caloriesRemainingInBudget = dailyCalorieBudget - caloriesConsumed;
+
+      // Filtered items by category for selected date
+      const filteredTimelineItems = activeDateItems.filter(item => {
+        if (scheduleFilter === 'all') return true;
+        return item.type === scheduleFilter;
+      });
+
+      return (
+        <div className="space-y-4 sm:space-y-5 w-full">
+
+          {/* FULL-WIDTH DAILY ENERGY & VITALITY SCORE CARD */}
+          <section className={`rounded-3xl p-4 sm:p-5 border transition-all ${
+            isDark ? 'glass-card-dark' : 'glass-card-light'
+          }`}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="w-8 h-8 rounded-xl bg-lime-400/20 text-lime-400 flex items-center justify-center font-bold">
+                  ⚡
+                </span>
+                <div>
+                  <h3 className={`text-sm sm:text-base font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    ระดับพลังงานร่างกายวันนี้ (Daily Energy & Vitality Score)
+                  </h3>
+                  <p className="text-[11px] text-slate-400">คำนวณจาก HRV อัตราการเต้นหัวใจ และระยะเวลาการหลับลึก</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 rounded-full text-xs font-black bg-lime-400/15 text-lime-500 border border-lime-400/30">
+                  84% พร้อมลุยกิจกรรม
+                </span>
+                <span className="text-xs text-slate-400 hidden sm:inline">• ฟื้นตัวสมบูรณ์</span>
+              </div>
+            </div>
+
+            {/* Glowing Gradient Energy Bar */}
+            <div className={`w-full h-3.5 rounded-full overflow-hidden p-0.5 ${
+              isDark ? 'bg-slate-900 border border-white/10' : 'bg-slate-200 border border-slate-300'
+            }`}>
+              <div 
+                className="h-full rounded-full bg-gradient-to-r from-lime-400 via-emerald-400 to-cyan-400 shadow-[0_0_12px_rgba(163,230,53,0.5)] transition-all duration-700" 
+                style={{ width: '84%' }}
+              ></div>
+            </div>
+
+            {/* 3 Metric Summary Boxes */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mt-3 pt-3 border-t border-white/10">
+              <div className={`p-2.5 rounded-2xl border flex items-center justify-between ${
+                isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+              }`}>
+                <span className="text-xs text-slate-400 flex items-center gap-1.5">🔥 เผาผลาญ:</span>
+                <span className="text-xs sm:text-sm font-black text-rose-400">1,420 / 2,100 kcal</span>
+              </div>
+
+              <div className={`p-2.5 rounded-2xl border flex items-center justify-between ${
+                isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+              }`}>
+                <span className="text-xs text-slate-400 flex items-center gap-1.5">💤 ฟื้นตัว (Recovery):</span>
+                <span className="text-xs sm:text-sm font-black text-emerald-400">88% ยอดเยี่ยม</span>
+              </div>
+
+              <div className={`p-2.5 rounded-2xl border flex items-center justify-between ${
+                isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+              }`}>
+                <span className="text-xs text-slate-400 flex items-center gap-1.5">⚡ ความพร้อม:</span>
+                <span className="text-xs sm:text-sm font-black text-lime-400">ระดับสูง (พร้อมซ้อม)</span>
+              </div>
+            </div>
+          </section>
+
+          {/* 3D WEATHER CARD WITH RAINDROP ANIMATION & SINGLE-LINE METRICS */}
+          <section className={`relative rounded-3xl p-4 sm:p-5 border overflow-hidden transition-all ${
+            isDark ? 'glass-card-dark bg-gradient-to-br from-indigo-950/40 via-slate-900/50 to-blue-950/40' : 'glass-card-light bg-gradient-to-br from-blue-50 via-sky-50 to-indigo-50'
+          }`}>
+            {/* Animated Raindrops Layer */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              {[10, 25, 42, 58, 72, 86, 94].map((leftPct, idx) => (
+                <div
+                  key={idx}
+                  className={`raindrop-streak ${!isDark ? 'raindrop-streak-light' : ''}`}
+                  style={{
+                    left: `${leftPct}%`,
+                    animationDelay: `${idx * 0.35}s`,
+                    animationDuration: `${1.1 + (idx % 3) * 0.25}s`
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Single-Row Weather & Metrics Display */}
+            <div className="relative z-10 flex flex-wrap md:flex-nowrap items-center justify-between gap-3 sm:gap-4">
+              
+              {/* Cloudy 3D Illustration & Status */}
+              <div className="flex items-center gap-3">
+                <div className="relative w-12 h-12 flex-shrink-0 anim-cloud-float">
+                  {/* Glowing 3D Sun */}
+                  <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-amber-400 shadow-[0_0_12px_#fbbf24]"></div>
+                  {/* Fluffy 3D Cloud */}
+                  <div className="absolute inset-0 bg-white/95 rounded-2xl shadow-lg border border-sky-100 flex items-center justify-center">
+                    <span className="text-xl">☁️</span>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className={`text-base sm:text-lg font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                      Cloudy
+                    </h4>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-sky-500/20 text-sky-400 border border-sky-500/30">
+                      Live
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-400">มีเมฆมาก ละอองฝนสดชื่น</p>
+                </div>
+              </div>
+
+              {/* Same-Line Stats: Temp, Wind, Humidity */}
+              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                {/* Temp */}
+                <div className={`px-3 py-1.5 rounded-2xl border flex items-center gap-2 ${
+                  isDark ? 'bg-slate-900/70 border-slate-800' : 'bg-white/80 border-slate-200'
+                }`}>
+                  <Icon name="thermometer" className="w-4 h-4 text-amber-400" />
+                  <div>
+                    <div className="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Temp</div>
+                    <div className="text-xs sm:text-sm font-black">28°C</div>
+                  </div>
+                </div>
+
+                {/* Wind */}
+                <div className={`px-3 py-1.5 rounded-2xl border flex items-center gap-2 ${
+                  isDark ? 'bg-slate-900/70 border-slate-800' : 'bg-white/80 border-slate-200'
+                }`}>
+                  <Icon name="wind" className="w-4 h-4 text-sky-400" />
+                  <div>
+                    <div className="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Wind</div>
+                    <div className="text-xs sm:text-sm font-black">14 km/h</div>
+                  </div>
+                </div>
+
+                {/* Humidity */}
+                <div className={`px-3 py-1.5 rounded-2xl border flex items-center gap-2 ${
+                  isDark ? 'bg-slate-900/70 border-slate-800' : 'bg-white/80 border-slate-200'
+                }`}>
+                  <Icon name="droplets" className="w-4 h-4 text-cyan-400" />
+                  <div>
+                    <div className="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Humidity</div>
+                    <div className="text-xs sm:text-sm font-black">72%</div>
+                  </div>
+                </div>
+
+                {/* Details Button */}
+                <button 
+                  onClick={() => alert('พยากรณ์อากาศ 24 ชม.: โอกาสเกิดฝนตก 45% คุณภาพอากาศดีมาก AQI: 32')}
+                  className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                    isDark ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-slate-900 text-white hover:bg-slate-800'
+                  }`}
+                >
+                  See Details &gt;
+                </button>
+              </div>
+
+            </div>
+          </section>
+
+          {/* ========================================================================= */}
+          {/* DYNAMIC DAILY CALORIE BALANCE TRACKER (DIRECTLY BELOW WEATHER CARD)       */}
+          {/* ========================================================================= */}
+          <section className={`rounded-3xl p-4 sm:p-5 border transition-all ${
+            isDark ? 'glass-card-dark bg-gradient-to-br from-[#1E1B4B]/70 via-[#13172E]/80 to-[#0F172A]/70' : 'glass-card-light'
+          }`}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/10 dark:border-white/10">
+              <div className="flex items-center gap-2.5">
+                <span className="w-9 h-9 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-black text-lg">
+                  ⚖️
+                </span>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className={`text-sm sm:text-base font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                      สมดุลแคลอรี่ประจำวัน (Daily Calorie Balance)
+                    </h3>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-lime-400/20 text-lime-400 border border-lime-400/30">
+                      {dateTabs.find(d => d.key === selectedDateKey)?.short || 'วันที่เลือก'}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-400">คำนวณจากอาหารที่ทานจริง หักลบด้วยพลังงานเผาผลาญและการออกกำลังกาย</p>
+                </div>
+              </div>
+
+              {/* Status Badge */}
+              <div className="flex items-center gap-2">
+                <span className={`px-3 py-1 rounded-full text-xs font-black border ${
+                  netCalorieBalance <= 0
+                    ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
+                    : 'bg-amber-500/15 border-amber-500/30 text-amber-400'
+                }`}>
+                  {netCalorieBalance <= 0 
+                    ? `🟢 Calorie Deficit (${Math.abs(netCalorieBalance).toLocaleString()} kcal)` 
+                    : `🟡 Surplus (+${netCalorieBalance.toLocaleString()} kcal)`}
+                </span>
+              </div>
+            </div>
+
+            {/* 4 Interactive Visual Calorie Columns */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3 mt-3">
+              {/* 1. Target Budget */}
+              <div className={`p-3 rounded-2xl border ${isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">เป้าหมาย (Budget)</div>
+                <div className={`text-base sm:text-xl font-black mt-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  {dailyCalorieBudget.toLocaleString()} <span className="text-xs font-normal text-slate-400">kcal</span>
+                </div>
+                <div className="text-[10px] text-slate-400 mt-1">เกณฑ์ TDEE แนะนำ</div>
+              </div>
+
+              {/* 2. Food Eaten */}
+              <div className={`p-3 rounded-2xl border ${isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                <div className="text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center justify-between">
+                  <span>ทานแล้ว (Intake)</span>
+                  <span className="text-[9px] text-slate-400">แพลน {totalPlannedFoodCalories}</span>
+                </div>
+                <div className="text-base sm:text-xl font-black mt-0.5 text-amber-400">
+                  {caloriesConsumed.toLocaleString()} <span className="text-xs font-normal text-slate-400">kcal</span>
+                </div>
+                <div className="text-[10px] text-slate-400 mt-1">
+                  เหลือทานได้อีก <strong className="text-lime-400">{Math.max(0, caloriesRemainingInBudget).toLocaleString()}</strong> kcal
+                </div>
+              </div>
+
+              {/* 3. Total Burned */}
+              <div className={`p-3 rounded-2xl border ${isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                <div className="text-[10px] font-bold text-rose-400 uppercase tracking-wider flex items-center justify-between">
+                  <span>เผาผลาญ (Burned)</span>
+                  <span>🔥</span>
+                </div>
+                <div className="text-base sm:text-xl font-black mt-0.5 text-rose-400">
+                  {totalActiveBurned.toLocaleString()} <span className="text-xs font-normal text-slate-400">kcal</span>
+                </div>
+                <div className="text-[10px] text-slate-400 mt-1">ก้าวเดิน + เผาผลาญพื้นฐาน</div>
+              </div>
+
+              {/* 4. Net Energy Balance */}
+              <div className={`p-3 rounded-2xl border ${
+                netCalorieBalance <= 0 
+                  ? (isDark ? 'bg-emerald-950/20 border-emerald-500/30' : 'bg-emerald-50 border-emerald-200')
+                  : (isDark ? 'bg-amber-950/20 border-amber-500/30' : 'bg-amber-50 border-amber-200')
+              }`}>
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                  <span>สุทธิ (Net Balance)</span>
+                  <span className="text-xs">{netCalorieBalance <= 0 ? '📉' : '📈'}</span>
+                </div>
+                <div className={`text-base sm:text-xl font-black mt-0.5 ${netCalorieBalance <= 0 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                  {netCalorieBalance > 0 ? `+${netCalorieBalance.toLocaleString()}` : netCalorieBalance.toLocaleString()} <span className="text-xs font-normal text-slate-400">kcal</span>
+                </div>
+                <div className="text-[10px] text-slate-400 mt-1">
+                  {netCalorieBalance <= 0 ? 'อยู่ในโซนเผาผลาญไขมัน' : 'ทานมากกว่าใช้เล็กน้อย'}
+                </div>
+              </div>
+            </div>
+
+            {/* Visual Calorie Budget Bar */}
+            <div className="mt-3.5 space-y-1.5">
+              <div className="flex justify-between items-center text-[11px] text-slate-400 font-bold">
+                <span>อัตราการใช้โควต้าแคลอรี่วันนี้:</span>
+                <span>{Math.round((caloriesConsumed / dailyCalorieBudget) * 100)}% ({caloriesConsumed} / {dailyCalorieBudget} kcal)</span>
+              </div>
+              <div className={`w-full h-2 rounded-full overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}>
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-amber-400 to-lime-400 transition-all duration-500"
+                  style={{ width: `${Math.min(100, Math.round((caloriesConsumed / dailyCalorieBudget) * 100))}%` }}
+                ></div>
+              </div>
+            </div>
+          </section>
+
+          {/* ======================================================== */}
+          {/* 4 QUICK METRIC BOXES: ALWAYS 2x2 GRID (SAME HEIGHT 140px) */}
+          {/* ======================================================== */}
+          <section className="grid grid-cols-2 gap-3 sm:gap-4 w-full">
+            
+            {/* 1. ก้าวเดิน (Steps) */}
+            <div className={`h-[140px] rounded-3xl p-3 sm:p-3.5 border flex items-center gap-2.5 sm:gap-3.5 overflow-hidden transition-all ${
+              isDark ? 'glass-card-dark' : 'glass-card-light'
+            }`}>
+              {/* 40% Photo Split */}
+              <div className="w-[40%] h-full rounded-2xl overflow-hidden relative bg-slate-900 flex-shrink-0 shadow-md">
+                <img
+                  src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=400&q=80"
+                  alt="ก้าวเดิน"
+                  className="w-full h-full object-cover"
+                />
+                <span className="absolute top-1.5 left-1.5 w-6 h-6 rounded-lg bg-blue-600/90 text-white flex items-center justify-center text-xs">
+                  ⚡
+                </span>
+              </div>
+
+              {/* 60% Content Split */}
+              <div className="w-[60%] flex flex-col justify-between h-full min-w-0 py-0.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] sm:text-xs font-bold text-slate-400 truncate">ก้าวเดิน</span>
+                  <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400">84%</span>
+                </div>
+                <div>
+                  <div className={`text-lg sm:text-2xl font-black truncate ${isDark ? 'text-white' : 'text-slate-950'}`}>
+                    {userStats.steps.toLocaleString()}
+                  </div>
+                  <div className="text-[10px] sm:text-[11px] text-slate-400 truncate">
+                    เป้าหมาย {userStats.stepsGoal.toLocaleString()} ก้าว
+                  </div>
+                </div>
+                {/* Progress Bar */}
+                <div className="w-full bg-slate-700/40 rounded-full h-1.5 overflow-hidden">
+                  <div className="bg-indigo-500 h-full rounded-full" style={{ width: '84%' }}></div>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Counseling */}
+            <div className={`h-[140px] rounded-3xl p-3 sm:p-3.5 border flex items-center gap-2.5 sm:gap-3.5 overflow-hidden transition-all ${
+              isDark ? 'glass-card-dark' : 'glass-card-light'
+            }`}>
+              <div className="w-[40%] h-full rounded-2xl overflow-hidden relative bg-slate-900 flex-shrink-0 shadow-md">
+                <img
+                  src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=400&q=80"
+                  alt="Counseling"
+                  className="w-full h-full object-cover"
+                />
+                <span className="absolute top-1.5 left-1.5 w-6 h-6 rounded-lg bg-amber-500/90 text-white flex items-center justify-center text-xs">
+                  ⏱️
+                </span>
+              </div>
+
+              <div className="w-[60%] flex flex-col justify-between h-full min-w-0 py-0.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] sm:text-xs font-bold text-slate-400 truncate uppercase">Counseling</span>
+                  <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">Active</span>
+                </div>
+                <div>
+                  <div className={`text-lg sm:text-2xl font-black truncate ${isDark ? 'text-white' : 'text-slate-950'}`}>
+                    {userStats.counseling}
+                  </div>
+                  <div className="text-[10px] sm:text-[11px] text-emerald-400 flex items-center gap-1 truncate">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ตรงตามนัดหมาย
+                  </div>
+                </div>
+                <button 
+                  onClick={() => alert('เปิดบันทึกคำปรึกษาแพทย์และนักจิตวิทยา')}
+                  className="w-full py-1 text-[11px] font-bold rounded-lg bg-white/10 hover:bg-white/20 truncate"
+                >
+                  ดูรายละเอียด
+                </button>
+              </div>
+            </div>
+
+            {/* 3. Lab Tests */}
+            <div className={`h-[140px] rounded-3xl p-3 sm:p-3.5 border flex items-center gap-2.5 sm:gap-3.5 overflow-hidden transition-all ${
+              isDark ? 'glass-card-dark' : 'glass-card-light'
+            }`}>
+              <div className="w-[40%] h-full rounded-2xl overflow-hidden relative bg-slate-900 flex-shrink-0 shadow-md">
+                <img
+                  src="https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=400&q=80"
+                  alt="Lab Tests"
+                  className="w-full h-full object-cover"
+                />
+                <span className="absolute top-1.5 left-1.5 w-6 h-6 rounded-lg bg-lime-500/90 text-slate-950 flex items-center justify-center text-xs font-bold">
+                  🧪
+                </span>
+              </div>
+
+              <div className="w-[60%] flex flex-col justify-between h-full min-w-0 py-0.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] sm:text-xs font-bold text-slate-400 truncate uppercase">Lab Tests</span>
+                  <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-lime-500/20 text-lime-400">14/25</span>
+                </div>
+                <div>
+                  <div className={`text-lg sm:text-2xl font-black text-lime-400 truncate`}>
+                    14/25
+                  </div>
+                  <div className="text-[10px] sm:text-[11px] text-slate-400 truncate">
+                    HbA1c 5.4% ปกติ
+                  </div>
+                </div>
+                <button 
+                  onClick={() => alert('เปิดผลแล็บตรวจเลือดและชีวเคมีล่าสุด')}
+                  className="w-full py-1 text-[11px] font-bold rounded-lg bg-lime-400/20 text-lime-400 hover:bg-lime-400/30 truncate"
+                >
+                  เปิดไฟล์แล็บ
+                </button>
+              </div>
+            </div>
+
+            {/* 4. การดื่มน้ำ (Water Intake) */}
+            <div className={`h-[140px] rounded-3xl p-3 sm:p-3.5 border flex items-center gap-2.5 sm:gap-3.5 overflow-hidden transition-all ${
+              isDark ? 'glass-card-dark' : 'glass-card-light'
+            }`}>
+              <div className="w-[40%] h-full rounded-2xl overflow-hidden relative bg-slate-900 flex-shrink-0 shadow-md">
+                <img
+                  src="https://images.unsplash.com/photo-1548839140-29a749e1bc4e?auto=format&fit=crop&w=400&q=80"
+                  alt="การดื่มน้ำ"
+                  className="w-full h-full object-cover"
+                />
+                <span className="absolute top-1.5 left-1.5 w-6 h-6 rounded-lg bg-cyan-500/90 text-white flex items-center justify-center text-xs">
+                  💧
+                </span>
+              </div>
+
+              <div className="w-[60%] flex flex-col justify-between h-full min-w-0 py-0.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] sm:text-xs font-bold text-slate-400 truncate">การดื่มน้ำ</span>
+                  <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400">
+                    {Math.round((userStats.water / userStats.waterGoal) * 100)}%
+                  </span>
+                </div>
+                <div>
+                  <div className={`text-lg sm:text-2xl font-black truncate ${isDark ? 'text-white' : 'text-slate-950'}`}>
+                    {userStats.water.toLocaleString()} <span className="text-xs font-normal text-slate-400">/ {userStats.waterGoal}</span>
+                  </div>
+                  <div className="text-[10px] sm:text-[11px] text-slate-400 truncate">
+                    เป้าหมายประจำวัน
+                  </div>
+                </div>
+                <button 
+                  onClick={() => addWater(250)}
+                  className="w-full py-1 text-[11px] font-bold rounded-lg bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 truncate"
+                >
+                  + 250 มล.
+                </button>
+              </div>
+            </div>
+
+          </section>
+
+          {/* ========================================================================= */}
+          {/* AHEAD SCHEDULE & TIMELINE GROUPED BY DATE (SPORTS, MEDS, FOOD & CALORIES) */}
+          {/* ========================================================================= */}
+          <section className={`rounded-3xl p-4 sm:p-5 border transition-all ${
+            isDark ? 'glass-card-dark' : 'glass-card-light'
+          }`}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/10 dark:border-white/10">
+              <div className="flex items-center gap-2.5">
+                <span className="w-9 h-9 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-black text-lg">
+                  📅
+                </span>
+                <div>
+                  <h3 className={`text-sm sm:text-base font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    กำหนดการและไทม์ไลน์ล่วงหน้า (Ahead Schedule Timeline)
+                  </h3>
+                  <p className="text-[11px] text-slate-400">
+                    จัดกลุ่มตามวันและเวลา พร้อมเชื่อมต่อกิจกรรมกีฬา, การทานยา/วิตามิน, และแพลนอาหาร
+                  </p>
+                </div>
+              </div>
+
+              {/* Date Group Tabs */}
+              <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-800/40 border border-white/10 overflow-x-auto no-scrollbar">
+                {dateTabs.map(tab => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setSelectedDateKey(tab.key)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all whitespace-nowrap ${
+                      selectedDateKey === tab.key
+                        ? (isDark ? 'bg-lime-400 text-slate-950 shadow-[0_0_12px_rgba(163,230,53,0.35)]' : 'bg-slate-900 text-white shadow-md')
+                        : (isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900')
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Filter Pills Header */}
+            <div className="flex items-center justify-between gap-2 mt-3 pt-1 flex-wrap">
+              <span className="text-xs font-black text-slate-400">
+                รายการของ {dateTabs.find(d => d.key === selectedDateKey)?.label} ({filteredTimelineItems.length} รายการ)
+              </span>
+
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                {[
+                  { id: 'all', label: 'ทั้งหมด' },
+                  { id: 'sport', label: '🏸 กีฬา/ฟิตเนส' },
+                  { id: 'med', label: '💊 วิตามิน/ยา' },
+                  { id: 'food', label: '🥗 มื้ออาหาร' }
+                ].map(filter => (
+                  <button
+                    key={filter.id}
+                    onClick={() => setScheduleFilter(filter.id)}
+                    className={`px-2.5 py-0.5 rounded-xl text-[11px] font-bold transition-all whitespace-nowrap ${
+                      scheduleFilter === filter.id
+                        ? (isDark ? 'bg-white/20 text-lime-400 border border-lime-400/40' : 'bg-slate-200 text-indigo-900 border border-slate-300')
+                        : (isDark ? 'bg-white/5 hover:bg-white/10 text-slate-400' : 'bg-slate-100 hover:bg-slate-200 text-slate-500')
+                    }`}
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* VISUAL VERTICAL TIMELINE */}
+            <div className="relative mt-4 pl-4 sm:pl-6 space-y-4 before:absolute before:left-[19px] sm:before:left-[27px] before:top-3 before:bottom-3 before:w-0.5 before:bg-gradient-to-b before:from-lime-400 before:via-cyan-400 before:to-indigo-500">
+              {filteredTimelineItems.map(item => {
+                const isFood = item.type === 'food';
+                const isMed = item.type === 'med';
+                const isSport = item.type === 'sport';
+
+                return (
+                  <div key={item.id} className="relative flex items-start gap-3 sm:gap-4 group">
+                    
+                    {/* Interactive Timeline Node (Circle Icon / Checkbox) */}
+                    <button
+                      type="button"
+                      onClick={() => toggleSchedule(item.id)}
+                      className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border-2 transition-all shadow-md ${
+                        item.done
+                          ? 'bg-lime-400 border-lime-400 text-slate-950 font-black shadow-[0_0_10px_#a3e635]'
+                          : (isDark 
+                              ? 'bg-slate-900 border-slate-700 text-slate-300 group-hover:border-lime-400' 
+                              : 'bg-white border-slate-300 text-slate-600 group-hover:border-indigo-600')
+                      }`}
+                    >
+                      {item.done ? (
+                        <Icon name="check" className="w-4 h-4 stroke-[3]" />
+                      ) : (
+                        <span className="text-xs">{isFood ? '🥗' : isMed ? '💊' : '🏸'}</span>
+                      )}
+                    </button>
+
+                    {/* Timeline Content Card */}
+                    <div
+                      onClick={() => toggleSchedule(item.id)}
+                      className={`flex-1 p-3 sm:p-3.5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 cursor-pointer transition-all hover:scale-[1.008] ${
+                        item.done
+                          ? (isDark ? 'bg-slate-900/40 border-slate-800/80 opacity-75' : 'bg-slate-50 border-slate-200 opacity-80')
+                          : (isDark ? 'bg-slate-900/80 border-slate-700/80 shadow-md' : 'bg-white border-slate-300 shadow-sm')
+                      }`}
+                    >
+                      {/* Left: Time badge + Title + Stats */}
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {/* Time badge */}
+                          <span className={`px-2 py-0.5 rounded-md font-mono text-[10px] sm:text-xs font-black border ${
+                            isDark ? 'bg-slate-800 border-slate-700 text-lime-400' : 'bg-slate-100 border-slate-300 text-slate-800'
+                          }`}>
+                            ⏱️ {item.time}
+                          </span>
+
+                          {/* Category Tag */}
+                          <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                            isFood 
+                              ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20' 
+                              : isMed 
+                                ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/20' 
+                                : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20'
+                          }`}>
+                            {item.tag}
+                          </span>
+                        </div>
+
+                        {/* Title */}
+                        <div className={`text-xs sm:text-sm font-bold mt-1 truncate ${
+                          item.done ? 'line-through text-slate-400' : (isDark ? 'text-white' : 'text-slate-900')
+                        }`}>
+                          {item.title}
+                        </div>
+
+                        {/* Extra Nutrition / Burn info */}
+                        <div className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-2">
+                          {isFood && <span>พลังงาน: <strong className="text-amber-400">+{item.cal} kcal</strong></span>}
+                          {isSport && <span>การเผาผลาญ: <strong className="text-rose-400">🔥 ~{item.calBurn} kcal</strong></span>}
+                          {isMed && <span>สถานะยา: <strong className="text-cyan-400">{item.done ? 'รับประทานแล้ว' : 'ยังไม่ได้รับประทาน'}</strong></span>}
+                        </div>
+                      </div>
+
+                      {/* Right: Status Pill */}
+                      <div className="flex-shrink-0 self-start sm:self-center">
+                        <span className={`text-[10px] sm:text-[11px] font-bold px-2.5 py-1 rounded-xl transition-all ${
+                          item.done
+                            ? 'bg-lime-400/15 text-lime-400 border border-lime-400/30'
+                            : (isDark ? 'bg-white/10 text-slate-300' : 'bg-slate-100 text-slate-700')
+                        }`}>
+                          {item.done ? '✓ เรียบร้อย' : 'รอดำเนินการ'}
+                        </span>
+                      </div>
+                    </div>
+
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Quick Actions Footer inside Timeline */}
+            <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+              <span>💡 ติ๊กที่จุดไทม์ไลน์เพื่อบันทึกสิ่งที่ทำแล้ว ระบบจะอัปเดตสมดุลแคลอรี่อัตโนมัติ</span>
+              <button
+                onClick={() => {
+                  const title = prompt('ระบุชื่อกิจกรรม/อาหาร/วิตามิน:');
+                  if (title) {
+                    const time = prompt('ระบุเวลา เช่น 14:00 น.:', '14:00 น.');
+                    const calStr = prompt('ระบุแคลอรี่อาหาร (ใส่เครื่องหมายลบหากเป็นการเผาผลาญ เช่น -300 หรือ 0 สำหรับวิตามิน):', '350');
+                    const calVal = parseInt(calStr || '0', 10);
+                    const isExercise = calVal < 0;
+                    const isMeal = calVal > 0;
+                    
+                    setScheduleItems(prev => [
+                      ...prev,
+                      {
+                        id: 'custom_' + Date.now(),
+                        dateKey: selectedDateKey,
+                        type: isExercise ? 'sport' : isMeal ? 'food' : 'med',
+                        time: time || '14:00 น.',
+                        title,
+                        cal: isMeal ? calVal : 0,
+                        calBurn: isExercise ? Math.abs(calVal) : 0,
+                        done: true,
+                        tag: isExercise ? 'กิจกรรมเสริม' : isMeal ? 'อาหารพิเศษ' : 'วิตามิน'
+                      }
+                    ]);
+                  }
+                }}
+                className="px-3 py-1.5 rounded-xl font-bold bg-lime-400 text-slate-950 hover:bg-lime-500 transition-colors"
+              >
+                + เพิ่มเข้าไทม์ไลน์วันที่เลือก
+              </button>
+            </div>
+          </section>
+
+        </div>
+      );
+    }
+
+    // ==============================================================
+    // 2. COMMUNITY MODULE (Sports Venues + Top-Center Booking Modal)
+    // ==============================================================
+    function CommunityModule({ isDark }) {
+      const [selectedVenue, setSelectedVenue] = useState(null);
+      const [selectedTrainer, setSelectedTrainer] = useState(STATIC_TRAINERS[0]);
+      const [selectedSlot, setSelectedSlot] = useState('18:00 - 19:00 น.');
+      const [bookingType, setBookingType] = useState('community_only');
+
+      const handleOpenVenue = (venue) => {
+        setSelectedVenue(venue);
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      };
+
+      return (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className={`text-xl sm:text-2xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                คอมมูนิตี้และสนามกีฬาสมาชิก
+              </h2>
+              <p className="text-xs text-slate-400">เข้าร่วมก๊วนแบดมินตัน วิ่ง และฟังก์ชันนอลเทรนนิ่ง</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+            {STATIC_VENUES.map(v => (
+              <div
+                key={v.id}
+                onClick={() => handleOpenVenue(v)}
+                className={`rounded-3xl border overflow-hidden cursor-pointer transition-all hover:scale-[1.01] ${
+                  isDark ? 'glass-card-dark' : 'glass-card-light'
+                }`}
+              >
+                <div className="h-40 relative">
+                  <img src={v.image} alt={v.name} className="w-full h-full object-cover" />
+                  <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full text-[10px] font-black bg-slate-900/80 text-lime-400">
+                    {v.type === 'public' ? 'สนามสาธารณะ (ฟรี)' : `฿${v.baseCost} / ชม.`}
+                  </span>
+                </div>
+                <div className="p-4">
+                  <h4 className="font-bold text-sm truncate">{v.name}</h4>
+                  <p className="text-xs text-slate-400 mt-1">📍 {v.loc} • ⏱️ {v.open}</p>
+                  <button className="mt-3 w-full py-1.5 rounded-xl bg-lime-400 text-slate-950 font-black text-xs hover:bg-lime-500">
+                    จองคลาสร่วมก๊วน
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* TOP-CENTER FIXED MODAL POPUP */}
+          {selectedVenue && (
+            <div 
+              ref={(el) => { if (el) el.scrollTop = 0; }}
+              className={`fixed inset-0 z-50 flex items-start justify-center pt-4 sm:pt-8 md:pt-10 px-3 sm:px-4 pb-12 overflow-y-auto backdrop-blur-md animate-fadeIn ${
+                isDark ? 'bg-black/80 text-white' : 'bg-slate-900/50 text-slate-900'
+              }`}
+            >
+              <div className={`w-full max-w-2xl rounded-3xl border shadow-2xl overflow-hidden flex flex-col relative my-auto sm:my-0 transition-all ${
+                isDark ? 'bg-[#0F1424] border-white/20' : 'bg-white border-slate-200'
+              }`}>
+                {/* Header */}
+                <div className={`px-4 sm:px-6 py-3.5 border-b flex items-center justify-between ${
+                  isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <button 
+                    onClick={() => setSelectedVenue(null)}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20"
+                  >
+                    <Icon name="chevronLeft" className="w-4 h-4" /> ย้อนกลับ
+                  </button>
+                  <span className="text-xs sm:text-sm font-black truncate">{selectedVenue.name}</span>
+                  <button onClick={() => setSelectedVenue(null)} className="p-1.5 text-slate-400 hover:text-white">
+                    <Icon name="x" className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Content */}
+                <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+                  <img src={selectedVenue.image} alt={selectedVenue.name} className="w-full h-44 object-cover rounded-2xl" />
+                  
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div 
+                      onClick={() => setBookingType('community_only')}
+                      className={`p-3 rounded-2xl border-2 cursor-pointer ${
+                        bookingType === 'community_only' ? 'border-lime-400 bg-lime-400/10' : 'border-slate-700'
+                      }`}
+                    >
+                      <div className="font-bold text-xs sm:text-sm">เข้าร่วมกลุ่มคอมมูนิตี้</div>
+                      <div className="text-[11px] text-slate-400">ซ้อมร่วมกับเพื่อนสมาชิก</div>
+                    </div>
+                    <div 
+                      onClick={() => setBookingType('with_trainer')}
+                      className={`p-3 rounded-2xl border-2 cursor-pointer ${
+                        bookingType === 'with_trainer' ? 'border-lime-400 bg-lime-400/10' : 'border-slate-700'
+                      }`}
+                    >
+                      <div className="font-bold text-xs sm:text-sm">กลุ่ม + โค้ชประกบ</div>
+                      <div className="text-[11px] text-slate-400">เทรนเนอร์มืออาชีพดูแลสรีระ</div>
+                    </div>
+                  </div>
+
+                  {bookingType === 'with_trainer' && (
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-400">เลือกโค้ชผู้ฝึกสอน:</label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {STATIC_TRAINERS.map(t => (
+                          <div 
+                            key={t.id} 
+                            onClick={() => setSelectedTrainer(t)}
+                            className={`p-2 rounded-xl border text-center cursor-pointer ${
+                              selectedTrainer?.id === t.id ? 'border-lime-400 bg-lime-400/20' : 'border-slate-800'
+                            }`}
+                          >
+                            <img src={t.img} alt={t.name} className="w-10 h-10 rounded-full mx-auto object-cover" />
+                            <div className="text-xs font-bold mt-1 truncate">{t.name}</div>
+                            <div className="text-[10px] text-lime-400">฿{t.rate}/ชม.</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer */}
+                <div className={`p-4 border-t flex items-center justify-between ${
+                  isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <div className="text-lg font-black text-lime-400">
+                    ฿{bookingType === 'with_trainer' ? (selectedVenue.baseCost + (selectedTrainer?.rate || 0)) : selectedVenue.baseCost}
+                  </div>
+                  <button 
+                    onClick={() => {
+                      alert('จองคลาสและล็อครอบสำเร็จ! ตรวจสอบรายละเอียดในกล่องข้อความ');
+                      setSelectedVenue(null);
+                    }}
+                    className="px-5 py-2.5 bg-lime-400 text-slate-950 font-black rounded-xl text-xs hover:bg-lime-500"
+                  >
+                    ยืนยันการจอง
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ==============================================================
+    // 3. FITNESS MODULE (Courses & Top-Center Checkout Modal)
+    // ==============================================================
+    function FitnessModule({ isDark }) {
+      const [selectedCourse, setSelectedCourse] = useState(null);
+
+      const handleOpenCourse = (c) => {
+        setSelectedCourse(c);
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      };
+
+      return (
+        <div className="space-y-4">
+          <div>
+            <h2 className={`text-xl sm:text-2xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              คอร์สออกกำลังกายและฟื้นฟูสมรรถภาพ
+            </h2>
+            <p className="text-xs text-slate-400">ออกแบบโดยแพทย์เวชศาสตร์ฟื้นฟูและโค้ชระดับสากล</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {STATIC_COURSES.map(c => (
+              <div key={c.id} className={`rounded-3xl border overflow-hidden ${isDark ? 'glass-card-dark' : 'glass-card-light'}`}>
+                <img src={c.image} alt={c.title} className="w-full h-44 object-cover" />
+                <div className="p-4 flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-bold text-base">{c.title}</h3>
+                    <p className="text-xs text-slate-400 mt-1">ผู้สอน: {c.instructor} • {c.duration}</p>
+                  </div>
+                  <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+                    <span className="text-lg font-black text-lime-400">฿{c.price.toLocaleString()}</span>
+                    <button 
+                      onClick={() => handleOpenCourse(c)}
+                      className="px-4 py-2 bg-lime-400 text-slate-950 font-black text-xs rounded-xl hover:bg-lime-500"
+                    >
+                      สมัครเข้าเรียน
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* TOP-CENTER MODAL */}
+          {selectedCourse && (
+            <div 
+              ref={(el) => { if (el) el.scrollTop = 0; }}
+              className={`fixed inset-0 z-50 flex items-start justify-center pt-4 sm:pt-8 md:pt-10 px-3 sm:px-4 pb-12 overflow-y-auto backdrop-blur-md animate-fadeIn ${
+                isDark ? 'bg-black/80' : 'bg-slate-900/50'
+              }`}
+            >
+              <div className={`w-full max-w-md rounded-3xl border p-5 sm:p-6 space-y-4 shadow-2xl relative my-auto sm:my-0 ${
+                isDark ? 'bg-slate-900 border-white/20 text-white' : 'bg-white border-slate-200 text-slate-900'
+              }`}>
+                <button onClick={() => setSelectedCourse(null)} className="absolute top-4 right-4 text-slate-400 hover:text-white">
+                  <Icon name="x" className="w-5 h-5" />
+                </button>
+                <h3 className="text-base font-bold">{selectedCourse.title}</h3>
+                <p className="text-xs text-slate-400">ยืนยันการชำระเงินผ่าน PromptPay QR Code</p>
+                <div className="w-36 h-36 bg-slate-950 text-lime-400 border-2 border-lime-400 rounded-2xl mx-auto flex flex-col items-center justify-center font-mono text-xs">
+                  <span>[ QR CODE ]</span>
+                  <span className="mt-1 font-bold">฿{selectedCourse.price.toLocaleString()}</span>
+                </div>
+                <button 
+                  onClick={() => {
+                    alert('ชำระเงินสำเร็จ! ได้รับสิทธิ์เข้าถึงเนื้อหาตลอดชีพ');
+                    setSelectedCourse(null);
+                  }}
+                  className="w-full py-2.5 bg-lime-400 text-slate-950 font-black text-xs rounded-xl hover:bg-lime-500"
+                >
+                  ยืนยันการชำระเงิน
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ==============================================================
+    // 4. NUTRITION MODULE (Food Scanner & Top-Center Analysis Modal)
+    // ==============================================================
+    function NutritionModule({ isDark }) {
+      const [analyzedFood, setAnalyzedFood] = useState(null);
+
+      // Calorie Balance State & Calculations
+      const dailyCalorieBudget = 2200;
+      const [caloriesConsumed, setCaloriesConsumed] = useState(1120); // Sync initial logged meals
+      const totalActiveBurned = 1420; // Base metabolic + active step burn
+      const netCalorieBalance = caloriesConsumed - totalActiveBurned;
+      const caloriesRemainingInBudget = dailyCalorieBudget - caloriesConsumed;
+
+      const handleAnalyze = (food) => {
+        setAnalyzedFood(food);
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      };
+
+      return (
+        <div className="space-y-4">
+          {/* ========================================================================= */}
+          {/* DYNAMIC DAILY CALORIE BALANCE TRACKER (AT THE TOP OF NUTRITION PAGE)       */}
+          {/* ========================================================================= */}
+          <section className={`rounded-3xl p-4 sm:p-5 border transition-all ${
+            isDark ? 'glass-card-dark bg-gradient-to-br from-[#1E1B4B]/70 via-[#13172E]/80 to-[#0F172A]/70' : 'glass-card-light'
+          }`}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/10 dark:border-white/10">
+              <div className="flex items-center gap-2.5">
+                <span className="w-9 h-9 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-black text-lg">
+                  ⚖️
+                </span>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className={`text-sm sm:text-base font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                      สมดุลแคลอรี่ประจำวัน (Daily Calorie Balance)
+                    </h3>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-lime-400/20 text-lime-400 border border-lime-400/30">
+                      วันนี้
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-400">คำนวณจากอาหารที่ทานจริง หักลบด้วยพลังงานเผาผลาญและการออกกำลังกาย</p>
+                </div>
+              </div>
+
+              {/* Status Badge */}
+              <div className="flex items-center gap-2">
+                <span className={`px-3 py-1 rounded-full text-xs font-black border ${
+                  netCalorieBalance <= 0
+                    ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
+                    : 'bg-amber-500/15 border-amber-500/30 text-amber-400'
+                }`}>
+                  {netCalorieBalance <= 0 
+                    ? `🟢 Calorie Deficit (${Math.abs(netCalorieBalance).toLocaleString()} kcal)` 
+                    : `🟡 Surplus (+${netCalorieBalance.toLocaleString()} kcal)`}
+                </span>
+              </div>
+            </div>
+
+            {/* 4 Interactive Visual Calorie Columns */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3 mt-3">
+              {/* 1. Target Budget */}
+              <div className={`p-3 rounded-2xl border ${isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">เป้าหมาย (Budget)</div>
+                <div className={`text-base sm:text-xl font-black mt-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  {dailyCalorieBudget.toLocaleString()} <span className="text-xs font-normal text-slate-400">kcal</span>
+                </div>
+                <div className="text-[10px] text-slate-400 mt-1">เกณฑ์ TDEE แนะนำ</div>
+              </div>
+
+              {/* 2. Food Eaten */}
+              <div className={`p-3 rounded-2xl border ${isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                <div className="text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center justify-between">
+                  <span>ทานแล้ว (Intake)</span>
+                  <span className="text-[9px] text-slate-400">วันนี้</span>
+                </div>
+                <div className="text-base sm:text-xl font-black mt-0.5 text-amber-400">
+                  {caloriesConsumed.toLocaleString()} <span className="text-xs font-normal text-slate-400">kcal</span>
+                </div>
+                <div className="text-[10px] text-slate-400 mt-1">
+                  เหลือทานได้อีก <strong className="text-lime-400">{Math.max(0, caloriesRemainingInBudget).toLocaleString()}</strong> kcal
+                </div>
+              </div>
+
+              {/* 3. Total Burned */}
+              <div className={`p-3 rounded-2xl border ${isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                <div className="text-[10px] font-bold text-rose-400 uppercase tracking-wider flex items-center justify-between">
+                  <span>เผาผลาญ (Burned)</span>
+                  <span>🔥</span>
+                </div>
+                <div className="text-base sm:text-xl font-black mt-0.5 text-rose-400">
+                  {totalActiveBurned.toLocaleString()} <span className="text-xs font-normal text-slate-400">kcal</span>
+                </div>
+                <div className="text-[10px] text-slate-400 mt-1">ก้าวเดิน + เผาผลาญพื้นฐาน</div>
+              </div>
+
+              {/* 4. Net Energy Balance */}
+              <div className={`p-3 rounded-2xl border ${
+                netCalorieBalance <= 0 
+                  ? (isDark ? 'bg-emerald-950/20 border-emerald-500/30' : 'bg-emerald-50 border-emerald-200')
+                  : (isDark ? 'bg-amber-950/20 border-amber-500/30' : 'bg-amber-50 border-amber-200')
+              }`}>
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                  <span>สุทธิ (Net Balance)</span>
+                  <span className="text-xs">{netCalorieBalance <= 0 ? '📉' : '📈'}</span>
+                </div>
+                <div className={`text-base sm:text-xl font-black mt-0.5 ${netCalorieBalance <= 0 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                  {netCalorieBalance > 0 ? `+${netCalorieBalance.toLocaleString()}` : netCalorieBalance.toLocaleString()} <span className="text-xs font-normal text-slate-400">kcal</span>
+                </div>
+                <div className="text-[10px] text-slate-400 mt-1">
+                  {netCalorieBalance <= 0 ? 'อยู่ในโซนเผาผลาญไขมัน' : 'ทานมากกว่าใช้เล็กน้อย'}
+                </div>
+              </div>
+            </div>
+
+            {/* Visual Calorie Budget Bar */}
+            <div className="mt-3.5 space-y-1.5">
+              <div className="flex justify-between items-center text-[11px] text-slate-400 font-bold">
+                <span>อัตราการใช้โควต้าแคลอรี่วันนี้:</span>
+                <span>{Math.round((caloriesConsumed / dailyCalorieBudget) * 100)}% ({caloriesConsumed} / {dailyCalorieBudget} kcal)</span>
+              </div>
+              <div className={`w-full h-2 rounded-full overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}>
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-amber-400 to-lime-400 transition-all duration-500"
+                  style={{ width: `${Math.min(100, Math.round((caloriesConsumed / dailyCalorieBudget) * 100))}%` }}
+                ></div>
+              </div>
+            </div>
+          </section>
+
+          <div>
+            <h2 className={`text-xl sm:text-2xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              โภชนาการและการวิเคราะห์อาหารอัจฉริยะ (AI Food Lens)
+            </h2>
+            <p className="text-xs text-slate-400">วิเคราะห์แคลอรี่ โปรตีน คาร์โบไฮเดรต และดัชนีน้ำตาลอัตโนมัติ</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {STATIC_FOODS.map(f => (
+              <div 
+                key={f.id} 
+                onClick={() => handleAnalyze(f)}
+                className={`rounded-3xl border overflow-hidden cursor-pointer ${isDark ? 'glass-card-dark' : 'glass-card-light'}`}
+              >
+                <img src={f.image} alt={f.name} className="w-full h-40 object-cover" />
+                <div className="p-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-bold text-lime-400 bg-lime-400/10 px-2 py-0.5 rounded-full">{f.category}</span>
+                    <span className="text-sm font-black text-lime-400">{f.calories} kcal</span>
+                  </div>
+                  <h4 className="font-bold text-sm mt-1">{f.name}</h4>
+                  <div className="mt-2 text-xs text-slate-400">โปรตีน {f.protein}g • คาร์บ {f.carbs}g • ไขมัน {f.fat}g</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* TOP-CENTER NUTRITION MODAL */}
+          {analyzedFood && (
+            <div 
+              ref={(el) => { if (el) el.scrollTop = 0; }}
+              className={`fixed inset-0 z-50 flex items-start justify-center pt-4 sm:pt-8 md:pt-10 px-3 sm:px-4 pb-12 overflow-y-auto backdrop-blur-md animate-fadeIn ${
+                isDark ? 'bg-black/80 text-white' : 'bg-slate-900/50 text-slate-900'
+              }`}
+            >
+              <div className={`w-full max-w-lg rounded-3xl border shadow-2xl overflow-hidden flex flex-col relative my-auto sm:my-0 ${
+                isDark ? 'bg-[#0F1424] border-white/20' : 'bg-white border-slate-200'
+              }`}>
+                <div className="p-5 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-black text-base">{analyzedFood.name}</h3>
+                    <button onClick={() => setAnalyzedFood(null)} className="text-slate-400 hover:text-white">
+                      <Icon name="x" className="w-5 h-5" />
+                    </button>
+                  </div>
+                  <img src={analyzedFood.image} alt={analyzedFood.name} className="w-full h-44 object-cover rounded-2xl" />
+                  <div className="grid grid-cols-4 gap-2 text-center text-xs">
+                    <div className="p-2 rounded-xl bg-lime-400/10 border border-lime-400/30">
+                      <div className="text-[10px] text-slate-400">แคลอรี่</div>
+                      <div className="font-black text-lime-400">{analyzedFood.calories}</div>
+                    </div>
+                    <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/30">
+                      <div className="text-[10px] text-slate-400">โปรตีน</div>
+                      <div className="font-black text-indigo-400">{analyzedFood.protein}g</div>
+                    </div>
+                    <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/30">
+                      <div className="text-[10px] text-slate-400">คาร์บ</div>
+                      <div className="font-black text-amber-400">{analyzedFood.carbs}g</div>
+                    </div>
+                    <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
+                      <div className="text-[10px] text-slate-400">ดัชนีน้ำตาล</div>
+                      <div className="font-black text-cyan-400">{analyzedFood.glycemicIndex}</div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-300 bg-white/5 p-3 rounded-xl border border-white/10">
+                    💡 <strong className="text-lime-400">คำแนะนำ:</strong> {analyzedFood.alignment}
+                  </p>
+                  <button 
+                    onClick={() => {
+                      setCaloriesConsumed(prev => prev + analyzedFood.calories);
+                      alert(`บันทึก ${analyzedFood.name} (+${analyzedFood.calories} kcal) ลงในบันทึกประจำวันเรียบร้อย!`);
+                      setAnalyzedFood(null);
+                    }}
+                    className="w-full py-2.5 bg-lime-400 text-slate-950 font-black text-xs rounded-xl hover:bg-lime-500"
+                  >
+                    บันทึกรายการนี้เข้ายอดแคลอรี่
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ==============================================================
+    // 5. MEDICATION MODULE (Reminders & Top-Center Add Med Modal)
+    // ==============================================================
+    function MedicationModule({ isDark }) {
+      const [isAddOpen, setIsAddOpen] = useState(false);
+      const [meds, setMeds] = useState([
+        { id: 1, name: 'Vitamin D3 2000 IU', time: '08:00 น.', taken: true },
+        { id: 2, name: 'Omega-3 Fish Oil 1000mg', time: '12:00 น.', taken: false },
+        { id: 3, name: 'Magnesium Glycinate', time: '21:30 น.', taken: false }
+      ]);
+      const [newMed, setNewMed] = useState('');
+
+      const handleToggle = (id) => {
+        setMeds(meds.map(m => m.id === id ? { ...m, taken: !m.taken } : m));
+      };
+
+      const handleAdd = (e) => {
+        e.preventDefault();
+        if (!newMed) return;
+        setMeds([...meds, { id: Date.now(), name: newMed, time: '20:00 น.', taken: false }]);
+        setNewMed('');
+        setIsAddOpen(false);
+      };
+
+      return (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className={`text-xl sm:text-2xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                ตารางเวลาทานยาและเวชภัณฑ์
+              </h2>
+              <p className="text-xs text-slate-400">ระบบเตือนอัตโนมัติพร้อมตัดสต็อกยาในครัวเรือน</p>
+            </div>
+            <button 
+              onClick={() => {
+                setIsAddOpen(true);
+                window.scrollTo({ top: 0, behavior: 'instant' });
+              }}
+              className="px-4 py-2 bg-lime-400 text-slate-950 font-black text-xs rounded-xl hover:bg-lime-500 flex items-center gap-1.5"
+            >
+              <Icon name="plus" className="w-4 h-4 stroke-[3]" /> เพิ่มยาใหม่
+            </button>
+          </div>
+
+          <div className="space-y-2.5">
+            {meds.map(m => (
+              <div 
+                key={m.id}
+                onClick={() => handleToggle(m.id)}
+                className={`p-4 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
+                  isDark ? 'glass-card-dark' : 'glass-card-light'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm ${
+                    m.taken ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'
+                  }`}>
+                    {m.taken ? '✓' : '💊'}
+                  </span>
+                  <div>
+                    <h4 className={`text-sm font-bold ${m.taken ? 'line-through text-slate-400' : ''}`}>{m.name}</h4>
+                    <span className="text-xs text-slate-400">เวลาทาน: {m.time}</span>
+                  </div>
+                </div>
+                <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                  m.taken ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-300'
+                }`}>
+                  {m.taken ? 'ทานแล้ว' : 'ยังไม่ทาน'}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* TOP-CENTER ADD MED MODAL */}
+          {isAddOpen && (
+            <div 
+              ref={(el) => { if (el) el.scrollTop = 0; }}
+              className={`fixed inset-0 z-50 flex items-start justify-center pt-4 sm:pt-8 md:pt-10 px-3 sm:px-4 pb-12 overflow-y-auto backdrop-blur-md animate-fadeIn ${
+                isDark ? 'bg-black/80' : 'bg-slate-900/50'
+              }`}
+            >
+              <div className={`w-full max-w-md rounded-3xl border p-5 sm:p-6 space-y-4 shadow-2xl relative my-auto sm:my-0 ${
+                isDark ? 'bg-slate-900 border-white/20 text-white' : 'bg-white border-slate-200 text-slate-900'
+              }`}>
+                <h3 className="text-base font-bold">เพิ่มยาใหม่</h3>
+                <form onSubmit={handleAdd} className="space-y-3">
+                  <input
+                    type="text"
+                    required
+                    value={newMed}
+                    onChange={(e) => setNewMed(e.target.value)}
+                    placeholder="ชื่อยาหรือวิตามิน เช่น CoQ10 100mg"
+                    className="w-full px-3 py-2 rounded-xl border bg-slate-800 border-slate-700 text-white text-xs outline-none"
+                  />
+                  <div className="flex gap-2">
+                    <button type="submit" className="flex-1 py-2 bg-lime-400 text-slate-950 font-black text-xs rounded-xl hover:bg-lime-500">บันทึก</button>
+                    <button type="button" onClick={() => setIsAddOpen(false)} className="px-4 py-2 bg-white/10 text-xs rounded-xl hover:bg-white/20">ยกเลิก</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ==============================================================
+    // 6. TELEMEDICINE MODULE (Doctor Video Consultations)
+    // ==============================================================
+    function TelemedModule({ isDark }) {
+      return (
+        <div className="space-y-4">
+          <div>
+            <h2 className={`text-xl sm:text-2xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              ปรึกษาแพทย์และนักกายภาพออนไลน์ (Telemedicine)
+            </h2>
+            <p className="text-xs text-slate-400">วิดีโอคอลความคมชัดสูงพร้อมรับใบสั่งยาจัดส่งถึงบ้าน</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              { name: 'พญ. พรประภา (อายุรแพทย์โรคหัวใจ)', hosp: 'รพ. กรุงเทพ', status: 'พร้อมให้คำปรึกษา', img: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=400&q=80' },
+              { name: 'นพ. วรเมธ (เวชศาสตร์ฟื้นฟูการกีฬา)', hosp: 'รพ. สมิติเวช', status: 'คิวถัดไป 14:00 น.', img: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=400&q=80' }
+            ].map((doc, idx) => (
+              <div key={idx} className={`p-4 rounded-3xl border flex gap-3.5 items-center ${isDark ? 'glass-card-dark' : 'glass-card-light'}`}>
+                <img src={doc.img} alt={doc.name} className="w-16 h-16 rounded-2xl object-cover" />
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-bold text-sm truncate">{doc.name}</h4>
+                  <p className="text-xs text-slate-400">{doc.hosp}</p>
+                  <span className="inline-block mt-1 text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">
+                    {doc.status}
+                  </span>
+                </div>
+                <button 
+                  onClick={() => alert(`เชื่อมต่อระบบวิดีโอคอลกับ ${doc.name}...`)}
+                  className="px-3 py-2 bg-lime-400 text-slate-950 font-black text-xs rounded-xl hover:bg-lime-500"
+                >
+                  เริ่มปรึกษา
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Mount React App
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
